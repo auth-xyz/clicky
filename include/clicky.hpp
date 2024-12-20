@@ -13,7 +13,7 @@ public:
   clicky();
 
   void add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description);
-  void add_flag(const std::string& name, const std::string& alias = "", const std::string& description = "", bool default_value = false);
+  void add_flag(const std::string& name, const std::string& alias = "", bool default_value = false, const std::string& description = "");
 
   void parse(int argc, char* argv[]);
 

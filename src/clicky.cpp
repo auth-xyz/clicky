@@ -4,7 +4,7 @@
 
 // ==== Constructor ====
 clicky::clicky() {
-  add_flag("help", "h", "Display this help message", false);
+  add_flag("help", "h", false, "Display this help message");
 }
 
 // ==== Add Argument ====
@@ -14,7 +14,7 @@ void clicky::add_argument(const std::string& name, const std::string& alias, boo
 }
 
 // ==== Add Flag ====
-void clicky::add_flag(const std::string& name, const std::string& alias, const std::string& description, bool default_value) {
+void clicky::add_flag(const std::string& name, const std::string& alias, bool default_value, const std::string& description) {
   flags_[name] = {alias, default_value, description, false};
   if (!alias.empty()) alias_map_[alias] = name;
 }
@@ -30,10 +30,11 @@ void clicky::parse(int argc, char* argv[]) {
     if (flags_.count(arg)) {
       flags_[arg].value = true;
     } else if (arguments_.count(arg)) {
-      std::vector<std::string> values;
-      while (i + 1 < argc && argv[i + 1][0] != '-') values.push_back(argv[++i]);
-      if (!values.empty()) arguments_[arg].value = join_values(values);
-      else if (arguments_[arg].required) missing_args_.push_back(arg);
+      if (i + 1 < argc && argv[i + 1][0] != '-') {
+        arguments_[arg].value = argv[++i];
+      } else if (arguments_[arg].required) {
+        missing_args_.push_back(arg);
+      }
     } else {
       positional_args_.push_back(argv[i]);
     }
@@ -44,10 +45,11 @@ void clicky::parse(int argc, char* argv[]) {
     exit(0);
   }
 
+  // Check for required arguments
   for (const auto& [name, arg] : arguments_) {
     if (arg.required && arg.value.empty()) {
-      std::cerr << "Missing required argument: " << name << '\n';
       missing_args_.push_back(name);
+      std::cerr << "Missing required argument: " << name << '\n';
     }
   }
 
@@ -59,12 +61,18 @@ void clicky::parse(int argc, char* argv[]) {
 
 // ==== Flag Value ====
 bool clicky::flag(const std::string& name) const {
-  return flags_.at(name).value;
+  auto it = flags_.find(name);
+  if (it == flags_.end()) return false; // Default to false if the flag doesn't exist
+  return it->second.value;
 }
 
 // ==== Argument Value ====
 std::string clicky::argument(const std::string& name) const {
-  return arguments_.at(name).value;
+  auto it = arguments_.find(name);
+  if (it == arguments_.end() || it->second.value.empty()) {
+    throw std::out_of_range("Argument '" + name + "' is missing or not provided.");
+  }
+  return it->second.value;
 }
 
 // ==== Positional Arguments ====

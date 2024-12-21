@@ -26,6 +26,13 @@ void clicky::add_flag(const std::string& name, const std::string& alias, bool de
   if (!alias.empty()) alias_map_[alias] = name;
 }
 
+// ==== Add Multiple Flags ====
+void clicky::add_flags(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args) {
+  for (const auto& [name,alias,default_value, description] : args) {
+    add_flag(name,alias,default_value,description);
+  }
+}
+
 // ==== Parse Command-Line Arguments ====
 void clicky::parse(int argc, char* argv[]) {
   for (int i = 1; i < argc; ++i) {

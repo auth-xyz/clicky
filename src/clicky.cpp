@@ -13,6 +13,13 @@ void clicky::add_argument(const std::string& name, const std::string& alias, boo
   if (!alias.empty()) alias_map_[alias] = name;
 }
 
+// ==== Add Multiple Arguments ====
+void clicky::add_arguments(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args) {
+  for (const auto& [name, alias, required, description] : args) {
+    add_argument(name, alias, required, description);
+  }
+}
+
 // ==== Add Flag ====
 void clicky::add_flag(const std::string& name, const std::string& alias, bool default_value, const std::string& description) {
   flags_[name] = {alias, default_value, description, false};

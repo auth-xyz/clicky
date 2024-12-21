@@ -1,4 +1,3 @@
-// clicky.hpp
 #ifndef CLICKY_HPP
 #define CLICKY_HPP
 
@@ -13,6 +12,7 @@ public:
   clicky();
 
   void add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description);
+  void add_arguments(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
   void add_flag(const std::string& name, const std::string& alias = "", bool default_value = false, const std::string& description = "");
 
   void parse(int argc, char* argv[]);

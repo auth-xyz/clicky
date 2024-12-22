@@ -1,6 +1,6 @@
 # Compiler and Flags
 CXX := g++
-CXXFLAGS := -std=c++20 -Wall -Wextra -pedantic -O2 -fPIC
+CXXFLAGS := -std=c++20 -Wall -Wextra -Werror -pedantic -O2 -fPIC
 
 # Directories
 INCLUDEDIR := include

@@ -19,11 +19,14 @@
 ### Setting up
 
 So, setting up clicky is pretty easy, I made sure that the process is pretty straight forward, as to keep its simplicity.
+However, you will need to instal `meson` and `ninja` if you want to compile it by yourself.
 
 ```bash
 $ git clone https://github.com/auth-xyz/clicky
 $ cd clicky/
-$ make && sudo make install 
+$ meson setup build
+$ ninja -C build
+$ sudo ninja install -C build
 ```
 
 One thing worth mentioning here:

@@ -6,4 +6,3 @@ build/
 .clangd
 test
 
-release.sh

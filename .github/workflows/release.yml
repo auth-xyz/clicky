@@ -1,0 +1,24 @@
+name: Run Script on Commit
+
+on:
+  push:
+    branches:
+      - '**' # Trigger on all branches
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Ensure the release script is executable
+      - name: Make release.sh executable
+        run: chmod +x ./release.sh
+
+      # Run the release script
+      - name: Run release.sh
+        run: ./release.sh
+

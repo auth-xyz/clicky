@@ -1,6 +1,5 @@
 // clicky.cpp
 #include "../include/clicky.hpp"
-#include "../include/colors.hpp"
 #include <algorithm>
 #include <iostream>
 #include <numeric>

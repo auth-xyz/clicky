@@ -1,6 +1,15 @@
 #ifndef CLICKY_HPP
 #define CLICKY_HPP
 
+// ============= COLORS ==================
+#define COLOR_RESET             "\033[0m"
+#define COLOR_WHITE             "\033[37m"
+#define COLOR_BRIGHT_RED        "\033[91m"
+#define COLOR_BRIGHT_GREEN      "\033[92m"
+#define COLOR_BRIGHT_YELLOW     "\033[93m"
+#define COLOR_BRIGHT_CYAN       "\033[96m"
+// =======================================
+
 #include <string>
 #include <vector>
 #include <unordered_map>

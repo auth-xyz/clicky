@@ -1,5 +1,9 @@
 name: Run Script on Commit
 
+gh:
+  env:
+    GH_TOKEN: ${{ github.token }}
+
 on:
   push:
     branches:

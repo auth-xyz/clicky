@@ -1,5 +1,9 @@
 .cache/
+dist/
 build/
 *.a
 *.so
 .clangd
+test
+
+release.sh

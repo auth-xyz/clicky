@@ -1,4 +1,5 @@
-#include "clicky.hpp"
+#include "clicky/clicky.hpp"
+#include <iostream>
 
 int main(int argc, char* argv[]) {
     clicky parser;

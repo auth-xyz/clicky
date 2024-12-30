@@ -40,7 +40,7 @@ If you are installing the library, make sure to link it when compiling using the
 So, `clicky`, though pretty straight forward, needs a bit of explaining. Everything is meant to be very simple to use, if you have any problems using it, you can check the `examples/` folder. But here's a simple-ish explanation of its core funcionality:
 
 ```cpp
-#include <clicky.hpp>
+#include <clicky/clicky.hpp>
 
 int main(int argc, char* argv[]) {
 	clicky cli; 

@@ -1,4 +1,4 @@
-#include <clicky.hpp> 
+#include <clicky/clicky.hpp> 
 
 int main(int argc, char* argv[]) {
   clicky cli;

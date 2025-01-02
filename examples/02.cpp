@@ -11,6 +11,10 @@ int main(int argc, char* argv[]) {
 
     // Adding prefix 
     parser.set_prefix({"/"}, {"/"}); // new method
+    // clicky::set_prefix() takes two vectors of strings, first being the prefixes for arguments and the second for flags
+    // that means, you can have something like {"/", "-"} for arguments, while flags are kept by the -- default.
+    // If only one string is passed for each, it'll be both for the full argument/flag aswell as its aliases.
+
 
     // Parsing arguments
     parser.parse(argc, argv);

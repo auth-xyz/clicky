@@ -16,7 +16,7 @@
 
 class clicky {
 public:
-    clicky();
+    explicit clicky(const std::string& usage = "");
 
     void add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description);
     void add_arguments(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
@@ -46,6 +46,8 @@ private:
         std::string value;
     };
 
+    std::string usage_;
+
     std::unordered_map<std::string, Flag> flags_;
     std::unordered_map<std::string, Argument> arguments_;
     std::unordered_map<std::string, std::string> alias_map_;
@@ -60,6 +62,7 @@ private:
 
     template <typename T>
     void print_items(const std::unordered_map<std::string, T>& items, size_t max_length) const; // Added
+    void print_usage(const std::string& program_name) const;
 };
 
 #endif // CLICKY_HPP

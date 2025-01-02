@@ -1,4 +1,3 @@
-// clicky.cpp
 #include "../include/clicky.hpp"
 #include <algorithm>
 #include <iostream>
@@ -37,39 +36,55 @@ void clicky::add_flags(const std::vector<std::tuple<std::string, std::string, bo
     }
 }
 
+// ==== Set Prefix ====
+void clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& flag_prefixes) {
+    arg_prefixes_ = arg_prefixes;
+    flag_prefixes_ = flag_prefixes.empty() ? arg_prefixes : flag_prefixes;
+}
+
 // ==== Parse Command-Line Arguments ====
 void clicky::parse(int argc, char* argv[]) {
-  for (int i = 1; i < argc; ++i) {
-    std::string_view arg = argv[i];
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
 
-    // Normalize argument
-    if (arg.starts_with("--")) arg.remove_prefix(2);
-    else if (arg.starts_with("-")) {
-      std::string alias = std::string(arg.substr(1));
-      arg = alias_map_.count(alias) ? alias_map_[alias] : alias;
+        if (!flag_prefixes_.empty() && arg.starts_with(flag_prefixes_[0])) {
+            arg = arg.substr(flag_prefixes_[0].length());
+        } else if (!arg_prefixes_.empty() && arg.starts_with(arg_prefixes_[0])) {
+            arg = arg.substr(arg_prefixes_[0].length());
+        }
+
+        // Handle key=value syntax
+        size_t equal_pos = arg.find('=');
+        if (equal_pos != std::string::npos) {
+            std::string key = arg.substr(0, equal_pos);
+            std::string value = arg.substr(equal_pos + 1);
+
+            if (arguments_.count(key)) {
+                arguments_[key].value = value;
+            } else {
+                std::cerr << "Unknown argument: " << key << '\n';
+                continue;
+            }
+        } else if (flags_.count(arg)) {
+            flags_[arg].value = true;
+        } else if (arguments_.count(arg)) {
+            if (i + 1 < argc && argv[i + 1][0] != '-') {
+                arguments_[arg].value = argv[++i];
+            } else if (arguments_[arg].required) {
+                missing_args_.push_back(arg);
+            }
+        } else {
+            positional_args_.emplace_back(argv[i]);
+        }
     }
 
-    if (flags_.count(arg.data())) {
-      flags_[arg.data()].value = true;
-    } else if (arguments_.count(arg.data())) {
-      if (i + 1 < argc && argv[i + 1][0] != '-') {
-        arguments_[arg.data()].value = argv[++i];
-      } else if (arguments_[arg.data()].required) {
-        missing_args_.push_back(arg.data());
-      }
-    } else {
-      positional_args_.emplace_back(argv[i]);
+    if (flag("help")) {
+        print_usage(argv[0]);
+        print_help();
+        exit(0);
     }
-  }
 
-  if (flag("help")) {
-    print_usage(argv[0]); 
-    print_help();
-
-    exit(0);
-  }
-
-  validate_required_arguments();
+    validate_required_arguments();
 }
 
 void clicky::validate_required_arguments() {
@@ -129,31 +144,31 @@ void clicky::print_help() const {
   calculate_max_length(flags_);
   calculate_max_length(arguments_);
 
-  std::cout << COLOR_BRIGHT_YELLOW << "Flags:\n" << COLOR_RESET;
+  std::cout << cl_colors::BRIGHT_YELLOW << "Flags:\n" << cl_colors::RESET;
   for (const auto& [name, flag] : flags_) {
-    std::cout << COLOR_BRIGHT_CYAN << "  --" << name;
-    if (!flag.alias.empty()) std::cout << COLOR_BRIGHT_GREEN << ", -" << flag.alias;
+    std::cout << cl_colors::BRIGHT_CYAN << "  --" << name;
+    if (!flag.alias.empty()) std::cout << cl_colors::BRIGHT_GREEN << ", -" << flag.alias;
 
     size_t current_length = name.length() + (flag.alias.empty() ? 0 : flag.alias.length() + 4);
     size_t padding = max_length - current_length + 4;
-    std::cout << std::string(padding, ' ') << COLOR_RESET << ": "
-      << COLOR_WHITE << flag.description << COLOR_RESET
+    std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
+      << cl_colors::WHITE << flag.description << cl_colors::RESET
       << " (default: "
-      << (flag.default_value ? COLOR_BRIGHT_GREEN "true" : COLOR_BRIGHT_RED "false")
-      << COLOR_RESET << ")\n";
+      << (flag.default_value ? (cl_colors::BRIGHT_GREEN + std::string("true")) : (cl_colors::BRIGHT_RED + std::string("false")))
+      << cl_colors::RESET << ")\n";
   }
 
-  std::cout << "\n" << COLOR_BRIGHT_YELLOW << "Arguments:\n" << COLOR_RESET;
+  std::cout << "\n" << cl_colors::BRIGHT_YELLOW << "Arguments:\n" << cl_colors::RESET;
   for (const auto& [name, arg] : arguments_) {
-    std::cout << COLOR_BRIGHT_CYAN << "  --" << name;
-    if (!arg.alias.empty()) std::cout << COLOR_BRIGHT_GREEN << ", -" << arg.alias;
+    std::cout << cl_colors::BRIGHT_CYAN << "  --" << name;
+    if (!arg.alias.empty()) std::cout << cl_colors::BRIGHT_GREEN << ", -" << arg.alias;
 
     size_t current_length = name.length() + (arg.alias.empty() ? 0 : arg.alias.length() + 4);
     size_t padding = max_length - current_length + 4;
-    std::cout << std::string(padding, ' ') << COLOR_RESET << ": "
-      << COLOR_WHITE << arg.description << COLOR_RESET
-      << (arg.required ? COLOR_BRIGHT_RED " (required)" : COLOR_BRIGHT_GREEN " (optional)")
-      << COLOR_RESET << '\n';
+    std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
+      << cl_colors::WHITE << arg.description << cl_colors::RESET
+      << (arg.required ? (cl_colors::BRIGHT_RED + std::string(" (required)")) : (cl_colors::BRIGHT_GREEN  + std::string(" (optional)"))) 
+      << (cl_colors::RESET) << '\n';
   }
 }
 
@@ -194,7 +209,7 @@ size_t clicky::calculate_max_length() const {
 void clicky::print_usage(const std::string& program_name) const {
     if (!usage_.empty()) {
         std::string formatted_usage = std::regex_replace(usage_, std::regex("\\{program\\}"), program_name);
-        std::cout << COLOR_BRIGHT_YELLOW << "Usage: \n" << COLOR_RESET
-                  << COLOR_WHITE << "  " << formatted_usage << COLOR_RESET << "\n\n";
+        std::cout << cl_colors::BRIGHT_YELLOW << "Usage: \n" << cl_colors::RESET
+                  << cl_colors::WHITE << "  " << formatted_usage << cl_colors::RESET << "\n\n";
     }
 }

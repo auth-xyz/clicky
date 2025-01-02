@@ -1,13 +1,14 @@
-#ifndef CLICKY_HPP
-#define CLICKY_HPP
+#pragma once 
 
 // ============= COLORS ==================
-#define COLOR_RESET             "\033[0m"
-#define COLOR_WHITE             "\033[37m"
-#define COLOR_BRIGHT_RED        "\033[91m"
-#define COLOR_BRIGHT_GREEN      "\033[92m"
-#define COLOR_BRIGHT_YELLOW     "\033[93m"
-#define COLOR_BRIGHT_CYAN       "\033[96m"
+namespace cl_colors {
+    constexpr const char* RESET = "\033[0m";
+    constexpr const char* WHITE = "\033[37m";
+    constexpr const char* BRIGHT_RED = "\033[91m";
+    constexpr const char* BRIGHT_GREEN = "\033[92m";
+    constexpr const char* BRIGHT_YELLOW = "\033[93m";
+    constexpr const char* BRIGHT_CYAN = "\033[96m";
+}
 // =======================================
 
 #include <string>
@@ -30,6 +31,7 @@ public:
     const std::vector<std::string>& positional_arguments() const;
 
     void print_help() const;
+    void set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& flag_prefixes = {});
 
 private:
     struct Flag {
@@ -47,6 +49,8 @@ private:
     };
 
     std::string usage_;
+    std::vector<std::string> arg_prefixes_ = {"--", "-"}; 
+    std::vector<std::string> flag_prefixes_ = {"--", "-"};  
 
     std::unordered_map<std::string, Flag> flags_;
     std::unordered_map<std::string, Argument> arguments_;
@@ -65,5 +69,4 @@ private:
     void print_usage(const std::string& program_name) const;
 };
 
-#endif // CLICKY_HPP
 

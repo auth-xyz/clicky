@@ -1,4 +1,4 @@
-#include "clicky/clicky.hpp"
+#include "../include/clicky.hpp" 
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -9,17 +9,11 @@ int main(int argc, char* argv[]) {
     parser.add_argument("x", "", true, "First number");
     parser.add_argument("y", "", true, "Second number");
 
-    // Adding flags
-    parser.add_flag("help", "h", false, "Display help message");
+    // Adding prefix 
+    parser.set_prefix({"/"}, {"/"}); // new method
 
     // Parsing arguments
     parser.parse(argc, argv);
-
-    // Handling help flag
-    if (parser.flag("help")) {
-        std::cout << "Usage: calculator --<operation> --x <num1> --y <num2>\n";
-        return 0;
-    }
 
     // Retrieving arguments
     std::string operation = parser.argument("operation");

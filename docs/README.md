@@ -53,7 +53,7 @@ Below, you'll find a list of the methods that are under the public interface of 
 
 
 `clicky::add_flag(const std::string& name, const std::string& alias, bool required, const std::string& description)` - `method` 
-- Takes 4 arguments, the name of the flag, its alias, if its default value, and the description of the flag. The `clicky::add_flags()` method is a convenience method that allows you to add multiple flags at once.
+- Takes 4 arguments, the name of the flag, its alias, its default value (either true or false), and the description of the flag. The `clicky::add_flags()` method is a convenience method that allows you to add multiple flags at once.
 
 
 `clicky::parse(int argc, char* argv[])` - `method`

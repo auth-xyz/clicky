@@ -1,9 +1,4 @@
 -----
-### CLIcky
-
-**clicky** is a C++ library that I've used in past projects, but never really published it as its own thing. In simple terms, it's a simplified `argparse` from python written in C++.
-
------
 
 - `What is clicky`:
     `clicky` As the introduction explains, it's a C++ library that handles arguments, flags and parses them from the argc and argv.

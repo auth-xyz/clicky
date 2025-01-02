@@ -31,7 +31,7 @@ If you are installing the library, make sure to link it when compiling using the
 
 ### Documentation
 
-You can find the documentation [here](https://github.com/auth-xyz/clicky/blob/main/docs/README.md)
+You can find the documentation [here](https://auth-xyz.github.io/clicky/#/)
 
 ----
 

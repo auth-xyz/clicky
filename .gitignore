@@ -7,3 +7,4 @@ build/
 test
 
 release.sh
+dist.py

@@ -10,8 +10,8 @@
 
 Now, you might be asking me: "Auth, how do I install this marvelous creation?", and I am here to answer that question my friend!
 You see, installing `clicky` will require you to do a bit of setting up, nothing out of the ordinary, just installing a package or two.
-Below, is how you install the two *main* requirements to build `clicky`. Now, of course, if you don't want to install clicky, you can 
-check the [releases](https://github.com/auth-xyz/clicky/releases) page!
+Below, is how you install the two *main* requirements to build `clicky`. Now, if you want the single-header file, which will skip these
+steps below, then you can go to the [releases](https://github.com/auth-xyz/clicky/releases) page and download the single-header file.
 
 The two tools you need to install `clicky` are:
 - [meson](https://mesonbuild.com/)

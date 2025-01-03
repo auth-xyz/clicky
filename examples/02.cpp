@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main(int argc, char* argv[]) {
-    clicky parser;
+    clicky parser("{program} [operation(add, subtract, multiply, divide)] [x] [y]");
 
     // Adding arguments
     parser.add_argument("operation", "", true, "Mathematical operation (add, subtract, multiply, divide)");

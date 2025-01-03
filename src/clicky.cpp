@@ -88,15 +88,21 @@ void clicky::parse(int argc, char* argv[]) {
 }
 
 void clicky::validate_required_arguments() {
+  std::stringstream error_message;
+
   for (const auto& [name, arg] : arguments_) {
     if (arg.required && arg.value.empty()) {
       missing_args_.push_back(name);
-      std::cerr << "Missing required argument: " << name << '\n';
+      error_message << (cl_colors::BRIGHT_CYAN + name + cl_colors::RESET)
+                    << " : " << arg.description << " [required]\n";
     }
   }
 
   if (!missing_args_.empty()) {
-    print_help();
+    std::cerr << cl_colors::BRIGHT_RED
+              << "Missing required argument(s):\n"
+              << cl_colors::RESET
+              << error_message.str();
     exit(1);
   }
 }
@@ -131,45 +137,58 @@ std::string clicky::join_values(const std::vector<std::string>& values) const {
 
 // ==== Print Help Message ====
 void clicky::print_help() const {
-  size_t max_length = 0;
+    size_t max_length = 0;
 
-  // Lambda to calculate maximum length of arguments/flags for formatting
-  auto calculate_max_length = [&](const auto& map) {
-    for (const auto& [name, item] : map) {
-      size_t length = name.length() + (item.alias.empty() ? 0 : item.alias.length() + 4);
-      max_length = std::max(max_length, length);
+    // Lambda to calculate maximum length of arguments/flags for formatting
+    auto calculate_max_length = [&](const auto& map) {
+        for (const auto& [name, item] : map) {
+            size_t length = name.length();
+            if (!item.alias.empty()) {
+                for (const auto& prefix : flag_prefixes_) {
+                    length = std::max(length, name.length() + prefix.length() + 2); // Account for prefix and ", "
+                }
+            }
+            max_length = std::max(max_length, length);
+        }
+    };
+
+    calculate_max_length(flags_);
+    calculate_max_length(arguments_);
+
+    std::cout << cl_colors::BRIGHT_YELLOW << "Flags:\n" << cl_colors::RESET;
+    for (const auto& [name, flag] : flags_) {
+        for (const auto& prefix : flag_prefixes_) {
+            std::cout << cl_colors::BRIGHT_CYAN << "  " << prefix << name;
+            if (!flag.alias.empty()) {
+                std::cout << cl_colors::BRIGHT_GREEN << ", " << prefix << flag.alias;
+            }
+
+            size_t current_length = name.length() + (flag.alias.empty() ? 0 : flag.alias.length() + prefix.length() + 2);
+            size_t padding = max_length - current_length + 4;
+            std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
+                      << cl_colors::WHITE << flag.description << cl_colors::RESET
+                      << " (default: "
+                      << (flag.default_value ? (cl_colors::BRIGHT_GREEN + std::string("true")) : (cl_colors::BRIGHT_RED + std::string("false")))
+                      << cl_colors::RESET << ")\n";
+        }
     }
-  };
 
-  calculate_max_length(flags_);
-  calculate_max_length(arguments_);
+    std::cout << "\n" << cl_colors::BRIGHT_YELLOW << "Arguments:\n" << cl_colors::RESET;
+    for (const auto& [name, arg] : arguments_) {
+        for (const auto& prefix : arg_prefixes_) {
+            std::cout << cl_colors::BRIGHT_CYAN << "  " << prefix << name;
+            if (!arg.alias.empty()) {
+                std::cout << cl_colors::BRIGHT_GREEN << ", " << prefix << arg.alias;
+            }
 
-  std::cout << cl_colors::BRIGHT_YELLOW << "Flags:\n" << cl_colors::RESET;
-  for (const auto& [name, flag] : flags_) {
-    std::cout << cl_colors::BRIGHT_CYAN << "  --" << name;
-    if (!flag.alias.empty()) std::cout << cl_colors::BRIGHT_GREEN << ", -" << flag.alias;
-
-    size_t current_length = name.length() + (flag.alias.empty() ? 0 : flag.alias.length() + 4);
-    size_t padding = max_length - current_length + 4;
-    std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
-      << cl_colors::WHITE << flag.description << cl_colors::RESET
-      << " (default: "
-      << (flag.default_value ? (cl_colors::BRIGHT_GREEN + std::string("true")) : (cl_colors::BRIGHT_RED + std::string("false")))
-      << cl_colors::RESET << ")\n";
-  }
-
-  std::cout << "\n" << cl_colors::BRIGHT_YELLOW << "Arguments:\n" << cl_colors::RESET;
-  for (const auto& [name, arg] : arguments_) {
-    std::cout << cl_colors::BRIGHT_CYAN << "  --" << name;
-    if (!arg.alias.empty()) std::cout << cl_colors::BRIGHT_GREEN << ", -" << arg.alias;
-
-    size_t current_length = name.length() + (arg.alias.empty() ? 0 : arg.alias.length() + 4);
-    size_t padding = max_length - current_length + 4;
-    std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
-      << cl_colors::WHITE << arg.description << cl_colors::RESET
-      << (arg.required ? (cl_colors::BRIGHT_RED + std::string(" (required)")) : (cl_colors::BRIGHT_GREEN  + std::string(" (optional)"))) 
-      << (cl_colors::RESET) << '\n';
-  }
+            size_t current_length = name.length() + (arg.alias.empty() ? 0 : arg.alias.length() + prefix.length() + 2);
+            size_t padding = max_length - current_length + 4;
+            std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
+                      << cl_colors::WHITE << arg.description << cl_colors::RESET
+                      << (arg.required ? (cl_colors::BRIGHT_RED + std::string(" (required)")) : (cl_colors::BRIGHT_GREEN + std::string(" (optional)")))
+                      << cl_colors::RESET << '\n';
+        }
+    }
 }
 
 template <typename T>

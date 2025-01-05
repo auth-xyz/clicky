@@ -42,39 +42,92 @@ void clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std:
     flag_prefixes_ = flag_prefixes.empty() ? arg_prefixes : flag_prefixes;
 }
 
+// ==== Parse One Field ====
+int clicky::parse_field(std::string field) {
+
+  if (flags_.count(field)) {
+    flags_[field].value = true;
+    return 0;
+  }
+
+  size_t value_separator = field.find('=');
+  value_separator == std::string::npos
+    && (value_separator = field.find(' '));
+
+  if (value_separator != std::string::npos) {
+    std::string key = field.substr(0, value_separator);
+    std::string value = field.substr(value_separator + 1);
+
+    if (arguments_.count(key)) {
+      arguments_[key].value = value;
+    } else {
+      std::cerr << "Unknown argument: " << key << '\n';
+      return 1;
+    }
+  } else {
+    positional_args_.emplace_back(field);
+  }
+
+  return 0;
+}
+
 // ==== Parse Command-Line Arguments ====
 void clicky::parse(int argc, char* argv[]) {
     for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
+        std::string field = argv[i];
+        bool is_alias = false;
 
-        if (!flag_prefixes_.empty() && arg.starts_with(flag_prefixes_[0])) {
-            arg = arg.substr(flag_prefixes_[0].length());
-        } else if (!arg_prefixes_.empty() && arg.starts_with(arg_prefixes_[0])) {
-            arg = arg.substr(arg_prefixes_[0].length());
-        }
+        if (!flag_prefixes_.empty() && field.starts_with(flag_prefixes_[0])) {
+          field = field.substr(flag_prefixes_[0].length());
+        } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[0])) {
+          field = field.substr(arg_prefixes_[0].length());
+        } else is_alias = true;
 
-        // Handle key=value syntax
-        size_t equal_pos = arg.find('=');
-        if (equal_pos != std::string::npos) {
-            std::string key = arg.substr(0, equal_pos);
-            std::string value = arg.substr(equal_pos + 1);
+        if (!is_alias) {
 
-            if (arguments_.count(key)) {
-                arguments_[key].value = value;
-            } else {
-                std::cerr << "Unknown argument: " << key << '\n';
-                continue;
+          if (arguments_.count(field)) {
+            if (i + 1 < argc
+                && !std::string(argv[i + 1]).starts_with(flag_prefixes_[0])
+                && !std::string(argv[i + 1]).starts_with(arg_prefixes_[0])) {
+              field += " " + std::string(argv[++i]);
+            } else if (arguments_[field].required) {
+              missing_args_.push_back(field);
             }
-        } else if (flags_.count(arg)) {
-            flags_[arg].value = true;
-        } else if (arguments_.count(arg)) {
-            if (i + 1 < argc && argv[i + 1][0] != '-') {
-                arguments_[arg].value = argv[++i];
-            } else if (arguments_[arg].required) {
-                missing_args_.push_back(arg);
-            }
+          }
+          parse_field(field);
+
         } else {
-            positional_args_.emplace_back(argv[i]);
+
+          if (!flag_prefixes_.empty() && field.starts_with(flag_prefixes_[1])) {
+            field = field.substr(flag_prefixes_[1].length());
+          } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[1])) {
+            field = field.substr(arg_prefixes_[1].length());
+          }
+          
+          for (size_t fi = 0; fi < field.length(); ++fi) {
+            std::string expanded;
+
+            if (alias_map_.count(std::string(1, field[fi]))) {
+              expanded = alias_map_[std::string(1, field[fi])];
+            } else {
+              std::cerr << "Unknown alias: -" << field[fi] << std::endl;
+              print_usage(argv[0]);
+              print_help();
+              exit(0);
+            }
+
+            if (arguments_.count(expanded)) {
+              if (fi + 1 >= field.length()) {
+                expanded += " " + std::string(argv[++i]);
+              } else {
+                expanded += " " + field.substr(fi + 1);
+              }
+              parse_field(expanded);
+              break;
+            }
+            parse_field(expanded);
+          }
+
         }
     }
 

@@ -60,6 +60,7 @@ private:
     std::vector<std::string> positional_args_;
 
     std::string join_values(const std::vector<std::string>& values) const;
+    int parse_field(std::string arg);
 
     void validate_required_arguments(); // Added
     size_t calculate_max_length() const; // Added

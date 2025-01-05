@@ -160,7 +160,7 @@ void clicky::validate_required_arguments() {
   }
 }
 
-// ==== Flag Value ====
+// ==== Option Value ====
 bool clicky::option(const std::string& name) const {
   auto it = options_.find(name);
   return it != options_.end() && it->second.value;
@@ -173,6 +173,11 @@ std::string clicky::argument(const std::string& name) const {
     throw std::out_of_range("Argument '" + name + "' is missing or not provided.");
   }
   return it->second.value;
+}
+
+// ==== Has Argument ====
+bool clicky::has_argument(const std::string& name) const {
+    return arguments_.count(name) && !arguments_.at(name).value.empty();
 }
 
 // ==== Positional Arguments ====
@@ -254,7 +259,7 @@ void clicky::print_items(const std::unordered_map<std::string, T>& items, size_t
     size_t padding = max_length - current_length + 4;
     std::cout << std::string(padding, ' ') << ": " << item.description;
 
-    if constexpr (std::is_same_v<T, Flag>) {
+    if constexpr (std::is_same_v<T, Option>) {
       std::cout << " (default: " << (item.default_value ? "true" : "false") << ")";
     } else {
       std::cout << (item.required ? " (required)" : " (optional)");

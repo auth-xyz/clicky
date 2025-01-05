@@ -29,12 +29,13 @@ public:
     bool option(const std::string& name) const;
     std::string argument(const std::string& name) const;
     const std::vector<std::string>& positional_arguments() const;
+    bool has_argument(const std::string& name) const;
 
     void print_help() const;
     void set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes = {});
 
 private:
-    struct Flag {
+    struct Option {
         std::string alias;
         bool default_value;
         std::string description;
@@ -52,7 +53,7 @@ private:
     std::vector<std::string> arg_prefixes_ = {"--", "-"}; 
     std::vector<std::string> option_prefixes_ = {"--", "-"};  
 
-    std::unordered_map<std::string, Flag> options_;
+    std::unordered_map<std::string, Option> options_;
     std::unordered_map<std::string, Argument> arguments_;
     std::unordered_map<std::string, std::string> alias_map_;
 

@@ -22,8 +22,8 @@ public:
     void add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description);
     void add_arguments(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
   
-    void add_flag(const std::string& name, const std::string& alias = "", bool default_value = false, const std::string& description = "");
-    void add_flags(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
+    void add_option(const std::string& name, const std::string& alias = "", bool default_value = false, const std::string& description = "");
+    void add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
 
     void parse(int argc, char* argv[]);
     bool flag(const std::string& name) const;

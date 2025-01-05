@@ -7,7 +7,7 @@
 
 // ==== Constructor ====
 clicky::clicky(const std::string& usage) : usage_(usage) {
-  add_flag("help", "h", false, "Display this help message");
+  add_option("help", "h", false, "Display this help message");
 }
 
 // ==== Add Argument ====
@@ -23,16 +23,16 @@ void clicky::add_arguments(const std::vector<std::tuple<std::string, std::string
     }
 }
 
-// ==== Add Flag ====
-void clicky::add_flag(const std::string& name, const std::string& alias, bool default_value, const std::string& description) {
+// ==== Add Option ====
+void clicky::add_option(const std::string& name, const std::string& alias, bool default_value, const std::string& description) {
     flags_[name] = {alias, default_value, description, false};
     if (!alias.empty()) alias_map_[alias] = name;
 }
 
-// ==== Add Multiple Flags ====
-void clicky::add_flags(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& flags) {
+// ==== Add Multiple Options ====
+void clicky::add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& flags) {
     for (const auto& [name, alias, default_value, description] : flags) {
-        add_flag(name, alias, default_value, description);
+        add_option(name, alias, default_value, description);
     }
 }
 
@@ -208,7 +208,7 @@ void clicky::print_help() const {
     calculate_max_length(flags_);
     calculate_max_length(arguments_);
 
-    std::cout << cl_colors::BRIGHT_YELLOW << "Flags:\n" << cl_colors::RESET;
+    std::cout << cl_colors::BRIGHT_YELLOW << "Options:\n" << cl_colors::RESET;
     for (const auto& [name, flag] : flags_) {
         for (const auto& prefix : flag_prefixes_) {
             std::cout << cl_colors::BRIGHT_CYAN << "  " << prefix << name;

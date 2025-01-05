@@ -4,7 +4,7 @@
 
 ### CLIcky
 
-**clicky** is a simple C++ library for handling command-line arguments and flags. It allows you to define flags and arguments, parse input, and display formatted help messages. You can easily add required or optional arguments, set default values for flags, and access both positional and named arguments. The library supports aliases for flags and arguments, ensures all required arguments are provided, and presents clear, color-coded help information for better usability.
+**clicky** is a simple C++ library for handling command-line arguments and options. It allows you to define options and arguments, parse input, and display formatted help messages. You can easily add required or optional arguments, set default values for options, and access both positional and named arguments. The library supports aliases for options and arguments, ensures all required arguments are provided, and presents clear, color-coded help information for better usability.
 
 ----
 
@@ -34,7 +34,7 @@ sudo ninja -C build install
 ```
 
 That's literally it! You installed clicky successfully!
-Now I need to put this reminder here, whenever you use clicky, you *need* to pass the -lclicky flag to `g++`
+Now I need to put this reminder here, whenever you use clicky, you *need* to pass the -lclicky option to `g++`
 *only if you're installed the library*
 
 ----
@@ -52,11 +52,11 @@ Below, you'll find a list of the methods that are under the public interface of 
 - Takes 4 arguments, the name of the argument, its alias, if its required or not, and the description of the argument. The `clicky::add_arguments()` method is a convenience method that allows you to add multiple arguments at once.
 
 
-`clicky::add_flag(const std::string& name, const std::string& alias, bool required, const std::string& description)` - `method` 
-- Takes 4 arguments, the name of the flag, its alias, its default value (either true or false), and the description of the flag. The `clicky::add_flags()` method is a convenience method that allows you to add multiple flags at once.
+`clicky::add_option(const std::string& name, const std::string& alias, bool required, const std::string& description)` - `method` 
+- Takes 4 arguments, the name of the option, its alias, its default value (either true or false), and the description of the option. The `clicky::add_options()` method is a convenience method that allows you to add multiple options at once.
 
-`clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& flag_prefixes)` - `method`
-- Takes 2 arguments, the prefixes for arguments and flags. See `examples/02.cpp` for a better understanding
+`clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes)` - `method`
+- Takes 2 arguments, the prefixes for arguments and options. See `examples/02.cpp` for a better understanding
 
 `clicky::parse(int argc, char* argv[])` - `method`
 - Takes 2 arguments, the argc and argv of the program. Does all the heavy lifting.
@@ -70,7 +70,7 @@ An example of how you'd use clicky in action:
 int main(int argc, char* argv[]) {
    clicky cli; // no usage message 
 
-   cli.add_flag("flag", "f", false, "This is a flag");
+   cli.add_option("option", "f", false, "This is a option");
    cli.add_argument("argument", "a", true, "This is an argument");
 
    cli.parse(argc, argv);

@@ -25,28 +25,28 @@ void clicky::add_arguments(const std::vector<std::tuple<std::string, std::string
 
 // ==== Add Option ====
 void clicky::add_option(const std::string& name, const std::string& alias, bool default_value, const std::string& description) {
-    flags_[name] = {alias, default_value, description, false};
+    options_[name] = {alias, default_value, description, false};
     if (!alias.empty()) alias_map_[alias] = name;
 }
 
 // ==== Add Multiple Options ====
-void clicky::add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& flags) {
-    for (const auto& [name, alias, default_value, description] : flags) {
+void clicky::add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& options) {
+    for (const auto& [name, alias, default_value, description] : options) {
         add_option(name, alias, default_value, description);
     }
 }
 
 // ==== Set Prefix ====
-void clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& flag_prefixes) {
+void clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes) {
     arg_prefixes_ = arg_prefixes;
-    flag_prefixes_ = flag_prefixes.empty() ? arg_prefixes : flag_prefixes;
+    option_prefixes_ = option_prefixes.empty() ? arg_prefixes : option_prefixes;
 }
 
 // ==== Parse One Field ====
 int clicky::parse_field(std::string field) {
 
-  if (flags_.count(field)) {
-    flags_[field].value = true;
+  if (options_.count(field)) {
+    options_[field].value = true;
     return 0;
   }
 
@@ -77,8 +77,8 @@ void clicky::parse(int argc, char* argv[]) {
         std::string field = argv[i];
         bool is_alias = false;
 
-        if (!flag_prefixes_.empty() && field.starts_with(flag_prefixes_[0])) {
-          field = field.substr(flag_prefixes_[0].length());
+        if (!option_prefixes_.empty() && field.starts_with(option_prefixes_[0])) {
+          field = field.substr(option_prefixes_[0].length());
         } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[0])) {
           field = field.substr(arg_prefixes_[0].length());
         } else is_alias = true;
@@ -87,7 +87,7 @@ void clicky::parse(int argc, char* argv[]) {
 
           if (arguments_.count(field)) {
             if (i + 1 < argc
-                && !std::string(argv[i + 1]).starts_with(flag_prefixes_[0])
+                && !std::string(argv[i + 1]).starts_with(option_prefixes_[0])
                 && !std::string(argv[i + 1]).starts_with(arg_prefixes_[0])) {
               field += " " + std::string(argv[++i]);
             } else if (arguments_[field].required) {
@@ -98,8 +98,8 @@ void clicky::parse(int argc, char* argv[]) {
 
         } else {
 
-          if (!flag_prefixes_.empty() && field.starts_with(flag_prefixes_[1])) {
-            field = field.substr(flag_prefixes_[1].length());
+          if (!option_prefixes_.empty() && field.starts_with(option_prefixes_[1])) {
+            field = field.substr(option_prefixes_[1].length());
           } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[1])) {
             field = field.substr(arg_prefixes_[1].length());
           }
@@ -131,7 +131,7 @@ void clicky::parse(int argc, char* argv[]) {
         }
     }
 
-    if (flag("help")) {
+    if (option("help")) {
         print_usage(argv[0]);
         print_help();
         exit(0);
@@ -161,9 +161,9 @@ void clicky::validate_required_arguments() {
 }
 
 // ==== Flag Value ====
-bool clicky::flag(const std::string& name) const {
-  auto it = flags_.find(name);
-  return it != flags_.end() && it->second.value;
+bool clicky::option(const std::string& name) const {
+  auto it = options_.find(name);
+  return it != options_.end() && it->second.value;
 }
 
 // ==== Argument Value ====
@@ -192,12 +192,12 @@ std::string clicky::join_values(const std::vector<std::string>& values) const {
 void clicky::print_help() const {
     size_t max_length = 0;
 
-    // Lambda to calculate maximum length of arguments/flags for formatting
+    // Lambda to calculate maximum length of arguments/options for formatting
     auto calculate_max_length = [&](const auto& map) {
         for (const auto& [name, item] : map) {
             size_t length = name.length();
             if (!item.alias.empty()) {
-                for (const auto& prefix : flag_prefixes_) {
+                for (const auto& prefix : option_prefixes_) {
                     length = std::max(length, name.length() + prefix.length() + 2); // Account for prefix and ", "
                 }
             }
@@ -205,23 +205,23 @@ void clicky::print_help() const {
         }
     };
 
-    calculate_max_length(flags_);
+    calculate_max_length(options_);
     calculate_max_length(arguments_);
 
     std::cout << cl_colors::BRIGHT_YELLOW << "Options:\n" << cl_colors::RESET;
-    for (const auto& [name, flag] : flags_) {
-        for (const auto& prefix : flag_prefixes_) {
+    for (const auto& [name, option] : options_) {
+        for (const auto& prefix : option_prefixes_) {
             std::cout << cl_colors::BRIGHT_CYAN << "  " << prefix << name;
-            if (!flag.alias.empty()) {
-                std::cout << cl_colors::BRIGHT_GREEN << ", " << prefix << flag.alias;
+            if (!option.alias.empty()) {
+                std::cout << cl_colors::BRIGHT_GREEN << ", " << prefix << option.alias;
             }
 
-            size_t current_length = name.length() + (flag.alias.empty() ? 0 : flag.alias.length() + prefix.length() + 2);
+            size_t current_length = name.length() + (option.alias.empty() ? 0 : option.alias.length() + prefix.length() + 2);
             size_t padding = max_length - current_length + 4;
             std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
-                      << cl_colors::WHITE << flag.description << cl_colors::RESET
+                      << cl_colors::WHITE << option.description << cl_colors::RESET
                       << " (default: "
-                      << (flag.default_value ? (cl_colors::BRIGHT_GREEN + std::string("true")) : (cl_colors::BRIGHT_RED + std::string("false")))
+                      << (option.default_value ? (cl_colors::BRIGHT_GREEN + std::string("true")) : (cl_colors::BRIGHT_RED + std::string("false")))
                       << cl_colors::RESET << ")\n";
         }
     }
@@ -273,7 +273,7 @@ size_t clicky::calculate_max_length() const {
     }
   };
 
-  update_max_length(flags_);
+  update_max_length(options_);
   update_max_length(arguments_);
   return max_length;
 }

@@ -26,12 +26,12 @@ public:
     void add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
 
     void parse(int argc, char* argv[]);
-    bool flag(const std::string& name) const;
+    bool option(const std::string& name) const;
     std::string argument(const std::string& name) const;
     const std::vector<std::string>& positional_arguments() const;
 
     void print_help() const;
-    void set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& flag_prefixes = {});
+    void set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes = {});
 
 private:
     struct Flag {
@@ -50,9 +50,9 @@ private:
 
     std::string usage_;
     std::vector<std::string> arg_prefixes_ = {"--", "-"}; 
-    std::vector<std::string> flag_prefixes_ = {"--", "-"};  
+    std::vector<std::string> option_prefixes_ = {"--", "-"};  
 
-    std::unordered_map<std::string, Flag> flags_;
+    std::unordered_map<std::string, Flag> options_;
     std::unordered_map<std::string, Argument> arguments_;
     std::unordered_map<std::string, std::string> alias_map_;
 

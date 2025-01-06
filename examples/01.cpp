@@ -5,12 +5,12 @@ int main(int argc, char* argv[]) {
     clicky parser;
 
     // Adding positional arguments
-    parser.add_argument("input", "", true, "Path to the input file");
-    parser.add_argument("output", "", true, "Path to the output file");
+    parser.add_argument({"input", "entrance"}, {"i"}, true, "Path to the input file");
+    parser.add_argument({"output"}, {"o", "e"}, true, "Path to the output file");
 
-    // Adding flags
-    parser.add_flag("verbose", "v", false, "Enable verbose output");
-    parser.add_flag("overwrite", "o", false, "Overwrite existing files");
+    // Adding options
+    parser.add_option({"verbose"}, {"v"}, false, "Enable verbose output");
+    parser.add_option({"overwrite"}, {"c"}, false, "Overwrite existing files");
 
     // Parsing command-line arguments
     parser.parse(argc, argv);
@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
     // Accessing values
     std::string input = parser.argument("input");
     std::string output = parser.argument("output");
-    bool verbose = parser.flag("verbose");
-    bool overwrite = parser.flag("overwrite");
+    bool verbose = parser.option("verbose");
+    bool overwrite = parser.option("overwrite");
 
     // Example output
     if (verbose) {

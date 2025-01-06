@@ -5,6 +5,9 @@ build/
 *.so
 .clangd
 test
+/examples/Makefile
+/examples/executable
+/include/clicky
 
 release.sh
 dist.py

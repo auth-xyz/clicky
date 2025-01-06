@@ -71,6 +71,7 @@ int clicky::parse_field(std::string field) {
   return 0;
 }
 
+// ==== Parse A Concatenated Set Of Flags ====
 bool clicky::parse_set(std::string field, std::string next_field) {
     bool next_field_used = false;
     for (size_t fi = 0; fi < field.length(); ++fi) {

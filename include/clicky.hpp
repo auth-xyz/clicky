@@ -19,11 +19,11 @@ class clicky {
 public:
     explicit clicky(const std::string& usage = "");
 
-    void add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description);
-    void add_arguments(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
+    void add_argument(const std::vector<std::string> args_long, const std::vector<std::string> args_short, bool required, const std::string& description);
+    void add_arguments(const std::vector<std::tuple<std::vector<std::string>, std::vector<std::string>, bool, std::string>>& args);
   
-    void add_option(const std::string& name, const std::string& alias = "", bool default_value = false, const std::string& description = "");
-    void add_options(const std::vector<std::tuple<std::string, std::string, bool, std::string>>& args);
+    void add_option(const std::vector<std::string> options_long, const std::vector<std::string> options_short = {}, bool default_value = false, const std::string& description = "");
+    void add_options(const std::vector<std::tuple<std::vector<std::string>, std::vector<std::string>, bool, std::string>>& args);
 
     void parse(int argc, char* argv[]);
     bool option(const std::string& name) const;
@@ -36,14 +36,12 @@ public:
 
 private:
     struct Option {
-        std::string alias;
         bool default_value;
         std::string description;
         bool value;
     };
 
     struct Argument {
-        std::string alias;
         bool required;
         std::string description;
         std::string value;
@@ -56,9 +54,13 @@ private:
     int argc_;
     char** argv_;
 
-    std::unordered_map<std::string, Option> options_;
-    std::unordered_map<std::string, Argument> arguments_;
+    // TODO: get rid of alias_map_ or replace with something different
     std::unordered_map<std::string, std::string> alias_map_;
+
+    std::unordered_map<std::string, Option*> options_long_;
+    std::unordered_map<std::string, Option*> options_short_;
+    std::unordered_map<std::string, Argument*> args_long_;
+    std::unordered_map<std::string, Argument*> args_short_;
 
     std::vector<std::string> missing_args_;
     std::vector<std::string> positional_args_;

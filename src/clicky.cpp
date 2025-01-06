@@ -71,8 +71,40 @@ int clicky::parse_field(std::string field) {
   return 0;
 }
 
+bool clicky::parse_set(std::string field, std::string next_field) {
+    bool next_field_used = false;
+    for (size_t fi = 0; fi < field.length(); ++fi) {
+        std::string expanded;
+
+        if (alias_map_.count(std::string(1, field[fi]))) {
+            expanded = alias_map_[std::string(1, field[fi])];
+        } else {
+            std::cerr << "Unknown alias: -" << field[fi] << std::endl;
+            print_usage(argv_[0]);
+            print_help();
+            exit(0);
+        }
+
+        if (arguments_.count(expanded)) {
+            if (fi + 1 >= field.length()) {
+                expanded += " " + std::string(next_field);
+                next_field_used = true;
+            } else {
+                expanded += " " + field.substr(fi + 1);
+            }
+            parse_field(expanded);
+            break;
+        }
+        parse_field(expanded);
+    }
+    return next_field_used;
+}
+
 // ==== Parse Command-Line Arguments ====
 void clicky::parse(int argc, char* argv[]) {
+    argv_ = argv;
+    argc_ = argc;
+
     for (int i = 1; i < argc; ++i) {
         std::string field = argv[i];
         bool is_alias = false;
@@ -97,36 +129,21 @@ void clicky::parse(int argc, char* argv[]) {
           parse_field(field);
 
         } else {
-
-          if (!option_prefixes_.empty() && field.starts_with(option_prefixes_[1])) {
-            field = field.substr(option_prefixes_[1].length());
-          } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[1])) {
-            field = field.substr(arg_prefixes_[1].length());
-          }
-          
-          for (size_t fi = 0; fi < field.length(); ++fi) {
-            std::string expanded;
-
-            if (alias_map_.count(std::string(1, field[fi]))) {
-              expanded = alias_map_[std::string(1, field[fi])];
-            } else {
-              std::cerr << "Unknown alias: -" << field[fi] << std::endl;
-              print_usage(argv[0]);
-              print_help();
-              exit(0);
+            if (!option_prefixes_.empty() && field.starts_with(option_prefixes_[1])) {
+                field = field.substr(option_prefixes_[1].length());
+            } else if (!arg_prefixes_.empty() && field.starts_with(arg_prefixes_[1])) {
+                field = field.substr(arg_prefixes_[1].length());
             }
 
-            if (arguments_.count(expanded)) {
-              if (fi + 1 >= field.length()) {
-                expanded += " " + std::string(argv[++i]);
-              } else {
-                expanded += " " + field.substr(fi + 1);
-              }
-              parse_field(expanded);
-              break;
-            }
-            parse_field(expanded);
-          }
+            if (
+                    parse_set(field,
+                        i + 1 < argc_
+                        && !std::string(argv_[i + 1]).starts_with(option_prefixes_[0])
+                        && !std::string(argv_[i + 1]).starts_with(option_prefixes_[1])
+                        && !std::string(argv_[i + 1]).starts_with(arg_prefixes_[0])
+                        && !std::string(argv_[i + 1]).starts_with(arg_prefixes_[1])
+                        ? argv_[i + 1] : "")
+               ) ++i;
 
         }
     }

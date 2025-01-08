@@ -41,13 +41,14 @@ private:
         bool value;
     };
 
-    struct Argument {
-        bool required;
-        std::string description;
-        std::string value;
-    };
+  struct Argument {
+    bool required;
+    std::string description;
+    std::string value;                 // For single value
+    std::vector<std::string> values;   // For multiple values
+  };
 
-    std::string usage_;
+  std::string usage_;
     std::vector<std::string> arg_prefixes_ = {"--", "-"}; 
     std::vector<std::string> option_prefixes_ = {"--", "-"};  
 
@@ -69,11 +70,11 @@ private:
     int parse_field(std::string arg);
     bool parse_set(std::string, std::string next_field = "");
 
-    void validate_required_arguments(); // Added
-    size_t calculate_max_length() const; // Added
+    void validate_required_arguments(); 
+    size_t calculate_max_length() const; 
 
     template <typename T>
-    void print_items(const std::unordered_map<std::string, T>& items, size_t max_length) const; // Added
+    void print_items(const std::unordered_map<std::string, T>& items, size_t max_length) const; 
     void print_usage(const std::string& program_name) const;
 };
 

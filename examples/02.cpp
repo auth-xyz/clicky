@@ -5,9 +5,9 @@ int main(int argc, char* argv[]) {
     clicky parser("{program} [operation(add, subtract, multiply, divide)] [x] [y]");
 
     // Adding arguments
-    parser.add_argument("operation", "", true, "Mathematical operation (add, subtract, multiply, divide)");
-    parser.add_argument("x", "", true, "First number");
-    parser.add_argument("y", "", true, "Second number");
+    parser.add_argument({"operation"},{"op"}, true, "Mathematical operation (add, subtract, multiply, divide)");
+    parser.add_argument({"x"}, {""},true, "First number");
+    parser.add_argument({"y"}, {""},true, "Second number");
 
     // Adding prefix 
     parser.set_prefix({"/"}, {"/"}); // new method

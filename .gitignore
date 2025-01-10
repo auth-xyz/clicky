@@ -10,4 +10,6 @@ test
 /include/clicky
 
 release.sh
+tmux.sh
 dist.py
+

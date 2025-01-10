@@ -2,6 +2,8 @@
     <img src="https://github.com/auth-xyz/assets/blob/main/logos/chunky.png?raw=true" alt="logo" width="400" height="400">
 </p>
 
+----
+
 ### CLIcky
 
 **clicky** is a simple C++ library for handling command-line arguments and options. It allows you to define options and arguments, parse input, and display formatted help messages. You can easily add required or optional arguments, set default values for options, and access both positional and named arguments. The library supports aliases for options and arguments, ensures all required arguments are provided, and presents clear, color-coded help information for better usability.
@@ -44,56 +46,83 @@ Now I need to put this reminder here, whenever you use clicky, you *need* to pas
 So, I'll try to make this documentation concise and easy to digest.
 Below, you'll find a list of the methods that are under the public interface of `clicky`:
 
-`clicky::clicky()` - `constructor`
-- Takes a single (optional) `std::string` argument that is the usage of the program. The usage can have a builtin variable `{program}` which will be replaced with the argv[0].
+#### `clicky::clicky(std::string usage = "")` - **constructor**
+- Takes an optional `std::string` argument that is the usage message for the program. The usage can include the special variable `{program}`, which will be replaced with `argv[0]`.
+
+#### `clicky::add_argument(const std::string& name, const std::string& alias, const std::string& description, bool required)` - **method**
+- Adds a positional argument. Takes 4 arguments:
+  - `name`: The name of the argument.
+  - `alias`: The alias for the argument.
+  - `description`: A brief description of the argument.
+  - `required`: A boolean indicating whether the argument is required.
+
+  The `clicky::add_arguments()` method is a convenience method for adding multiple arguments at once.
+
+#### `clicky::add_option(const std::string& name, const std::string& alias, const std::string& description, bool required)` - **method**
+- Adds an option. Takes 4 arguments:
+  - `name`: The name of the option.
+  - `alias`: The alias for the option.
+  - `description`: A brief description of the option.
+  - `required`: A boolean indicating whether the option is required.
+
+  The `clicky::add_options()` method is a convenience method for adding multiple options at once.
+
+#### `clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes)` - **method**
+- Sets prefixes for arguments and options. The `arg_prefixes` vector applies to argument prefixes, while `option_prefixes` applies to option prefixes. This allows you to customize how arguments and options are prefixed (e.g., using `-` or `/` for flags).
+
+#### `clicky::group(const std::string& group_name, const std::vector<std::string>& option_aliases)` - **method**
+- Groups options together. The `group_name` is the name of the group, and `option_aliases` is a vector of option aliases that belong to the group. Allows things like ./someprogram -xyz
+
+#### `clicky::parse(int argc, char* argv[])` - **method**
+- Parses the command-line arguments. It takes two arguments: `argc` and `argv` from the `main()` function.
 
 
-`clicky::add_argument(const std::string& name, const std::string& alias, bool required, const std::string& description)` - `method` 
-- Takes 4 arguments, the name of the argument, its alias, if its required or not, and the description of the argument. The `clicky::add_arguments()` method is a convenience method that allows you to add multiple arguments at once.
+---
 
+### Example Usage
 
-`clicky::add_option(const std::string& name, const std::string& alias, bool required, const std::string& description)` - `method` 
-- Takes 4 arguments, the name of the option, its alias, its default value (either true or false), and the description of the option. The `clicky::add_options()` method is a convenience method that allows you to add multiple options at once.
+#### Example 1: Simple Program with Arguments and Options
 
-`clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes)` - `method`
-- Takes 2 arguments, the prefixes for arguments and options. See `examples/02.cpp` for a better understanding
-
-`clicky::parse(int argc, char* argv[])` - `method`
-- Takes 2 arguments, the argc and argv of the program. Does all the heavy lifting.
-
-
-
-An example of how you'd use clicky in action:
 ```cpp
 #include <clicky/clicky.hpp>
 
 int main(int argc, char* argv[]) {
-   clicky cli; // no usage message 
+    clicky cli; // no usage message 
 
-   cli.add_option("option", "f", false, "This is a option");
-   cli.add_argument("argument", "a", true, "This is an argument");
+    cli.add_option("option", "f", "This is an option", false);
+    cli.add_argument("argument", "a", "This is an argument", true);
 
-   cli.parse(argc, argv);
+    cli.parse(argc, argv);
 }
 ```
-`g++ -std=c++20 -o some_program some_program.cpp -lclicky`
+
+Usage with `g++`:
+```bash
+g++ -std=c++20 -o some_program some_program.cpp -lclicky
+```
+
+#### Example 2: Program with Usage Message, Arguments, and Options
 
 ```cpp
 #include <clicky/clicky.hpp>
 
 int main(int argc, char* argv[]) {
-   clicky cli("{program} [OPTIONS]"); // usage message, using the {program} variable.
-   
-   cli.add_arguments({
-                     {"argument", "a", true, "This is an argument"},
-                     {"argument2", "b", false, "This is another argument"}
-   });
-   cli.parse(argc,argv)
+    clicky cli("{program} [OPTIONS]"); // usage message, using the {program} variable.
+    
+    cli.add_arguments({
+                     {"argument", "a", "This is an argument", true},
+                     {"argument2", "b", "This is another argument", false}
+    });
+    cli.parse(argc, argv);
 }
 ```
 
-`g++ -std=c++20 -o some_other_program some_other_program.cpp -lclicky`
+Usage with `g++`:
+```bash
+g++ -std=c++20 -o some_other_program some_other_program.cpp -lclicky
+```
 
+Running the program:
 ```
 ./some_other_program --help
 Usage: 
@@ -107,13 +136,10 @@ Arguments:
   --argument, -a     : This is an argument (required)
 ```
 
-That's *pretty much* all that clicky has (for now), I plan to expand the project further, add more things and maybe, just maybe, put it in the official dnf repository, but that's for the future.
-There are some other methods that I haven't mentioned, but they are self-explanatory.
-
-----
+---
 
 ### Contributing
 
 If you think my code is shit, it's because it most likely is, and if you have any advice for me on how to improve my code, please reach out on discord <actually.auth>, or create an issue on this repo.
 
-
+---

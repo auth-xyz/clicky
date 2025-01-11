@@ -219,7 +219,7 @@ void clicky::parse(int argc, char* argv[]) {
         }
     }
 
-    if (option("help")) {
+    if (get_option("help")) {
         print_usage(argv[0]);
         print_help();
         exit(0);
@@ -251,13 +251,13 @@ void clicky::validate_required_arguments() {
 }
 
 // ==== Option Value ====
-bool clicky::option(const std::string& name) const {
+bool clicky::get_option(const std::string& name) const {
     auto it = options_map_.find(name);
     return it != options_map_.end() && it->second->value;
 }
 
 // ==== Argument Value ====
-std::string clicky::argument(const std::string& name) const {
+std::string clicky::get_argument(const std::string& name) const {
     auto it = args_map_.find(name);
     if (it == args_map_.end() || it->second->value.empty()) {
         throw std::out_of_range("Argument '" + name + "' is missing or not provided.");

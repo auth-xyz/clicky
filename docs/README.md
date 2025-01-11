@@ -58,12 +58,12 @@ Below, you'll find a list of the methods that are under the public interface of 
 
   The `clicky::add_arguments()` method is a convenience method for adding multiple arguments at once.
 
-#### `clicky::add_option(const std::string& name, const std::string& alias, const std::string& description, bool required)` - **method**
+#### `clicky::add_option(const std::string& name, const std::string& alias, const std::string& description, bool default_value)` - **method**
 - Adds an option. Takes 4 arguments:
   - `name`: The name of the option.
   - `alias`: The alias for the option.
   - `description`: A brief description of the option.
-  - `required`: A boolean indicating whether the option is required.
+  - `default_value`: A boolean indicating the value of the option. 
 
   The `clicky::add_options()` method is a convenience method for adding multiple options at once.
 

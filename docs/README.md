@@ -67,6 +67,12 @@ Below, you'll find a list of the methods that are under the public interface of 
 
   The `clicky::add_options()` method is a convenience method for adding multiple options at once.
 
+#### `clicky::get_argument(const std::string& name)` - **method**
+- Returns a pointer to the argument with the given name. If the argument is not found, returns `nullptr`.
+
+#### `clicky::get_option(const std::string& name)` - **method**
+- Returns a pointer to the option with the given name. If the option is not found, returns `false`.
+
 #### `clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std::vector<std::string>& option_prefixes)` - **method**
 - Sets prefixes for arguments and options. The `arg_prefixes` vector applies to argument prefixes, while `option_prefixes` applies to option prefixes. This allows you to customize how arguments and options are prefixed (e.g., using `-` or `/` for flags).
 

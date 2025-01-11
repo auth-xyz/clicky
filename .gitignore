@@ -1,15 +1,20 @@
-.cache/
-dist/
-build/
-*.a
-*.so
-.clangd
-test
-/examples/Makefile
-/examples/executable
-/include/clicky
-
+# Files / Scripts
 release.sh
 tmux.sh
 dist.py
+examples/Makefile
+examples/executable
+include/clicky
+test
+
+# Directories
+dist/
+build/
+.cache/
+
+# Generated / Dotfiles
+*.a
+*.so
+.clangd
+.envrc
 

@@ -74,13 +74,15 @@ void clicky::set_prefix(const std::vector<std::string>& arg_prefixes, const std:
 
 // ==== Parse One Field ====
 int clicky::parse_field(std::string field) {
+    std::string original_field = field; // Keep original for reference
+
     // Check if the field is an option
     if (options_map_.count(field)) {
         options_map_[field]->value = true;
         return 0;
     }
 
-    // Split key-value pairs (e.g., --arg=value)
+    // Handle key-value pairs (e.g., --arg=value)
     size_t value_separator = field.find('=');
     if (value_separator != std::string::npos) {
         std::string key = field.substr(0, value_separator);
@@ -89,7 +91,7 @@ int clicky::parse_field(std::string field) {
         if (args_map_.count(key)) {
             args_map_[key]->value = value;
         } else {
-            std::cerr << "Unknown argument: " << key << '\n';
+            std::cerr << "Unknown argument: " << original_field << '\n';
             return 1;
         }
     } else {
@@ -104,6 +106,7 @@ int clicky::parse_field(std::string field) {
 bool clicky::parse_set(std::string field, std::string next_field) {
     bool next_field_used = false;
     std::cout << field << " " << next_field << '\n';
+
     // Check if grouping is enabled
     if (!grouping_enabled_) {
         if (alias_map_.count(field)) {
@@ -125,7 +128,7 @@ bool clicky::parse_set(std::string field, std::string next_field) {
                 exit(1);
             }
         } else {
-            std::cout << "Unknown option:" << option_prefixes_[0] << field << '\n';
+            std::cerr << "Unknown option: " << field << '\n';
             exit(1);
         }
     } else {
@@ -160,7 +163,6 @@ bool clicky::parse_set(std::string field, std::string next_field) {
     return next_field_used;
 }
 
-
 // ==== Parse Command-Line Arguments ====
 void clicky::parse(int argc, char* argv[]) {
     argv_ = argv;
@@ -168,7 +170,8 @@ void clicky::parse(int argc, char* argv[]) {
 
     for (int i = 1; i < argc; ++i) {
         std::string field = argv[i];
-        bool is_alias = false;
+        std::string original_field = field; // Save for error messages
+        bool is_concatenated_flags = false;
 
         // Remove prefixes for options and arguments
         for (const auto& prefix : option_prefixes_) {
@@ -177,6 +180,7 @@ void clicky::parse(int argc, char* argv[]) {
                 break;
             }
         }
+
         for (const auto& prefix : arg_prefixes_) {
             if (field.starts_with(prefix)) {
                 field = field.substr(prefix.length());
@@ -184,25 +188,34 @@ void clicky::parse(int argc, char* argv[]) {
             }
         }
 
-        // Check for concatenated flags (e.g., -xyz)
-        if (field.length() > 1 && !args_map_.count(field)) {
-            is_alias = true;
-        }
-
-        if (is_alias) {
-            if (parse_set(field, (i + 1 < argc) ? argv[i + 1] : "")) {
-                ++i;
+        // Check if field matches a long-form option or argument directly
+        if (options_map_.count(field)) {
+            options_map_[field]->value = true; // Long-form option matched
+        } else if (args_map_.count(field)) {
+            // Argument that requires a value
+            if (i + 1 < argc &&
+                !std::string(argv[i + 1]).starts_with(option_prefixes_[0]) &&
+                !std::string(argv[i + 1]).starts_with(arg_prefixes_[0])) {
+                args_map_[field]->value = argv[++i];
+            } else {
+                std::cerr << "Argument --" << field << " requires a value.\n";
+                exit(1);
             }
         } else {
-            // Check if the next field is a value
-            if (args_map_.count(field)) {
-                if (i + 1 < argc &&
-                    !std::string(argv[i + 1]).starts_with(option_prefixes_[0]) &&
-                    !std::string(argv[i + 1]).starts_with(arg_prefixes_[0])) {
-                    field += "=" + std::string(argv[++i]);
-                }
+            // Determine if it's a concatenated set of flags
+            if (field.length() > 1 && !args_map_.count(field)) {
+                is_concatenated_flags = true;
             }
-            parse_field(field);
+
+            if (is_concatenated_flags) {
+                // Process concatenated flags
+                if (parse_set(field, (i + 1 < argc) ? argv[i + 1] : "")) {
+                    ++i;
+                }
+            } else {
+                std::cerr << "Unknown option: " << original_field << '\n';
+                exit(1);
+            }
         }
     }
 

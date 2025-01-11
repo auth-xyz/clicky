@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
     });
     parser.group("options", {"v", "c"});
 
-    parser.set_prefix({"/"}, {"/"});  
 
     parser.parse(argc, argv);
 

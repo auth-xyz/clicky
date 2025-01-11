@@ -70,6 +70,9 @@ Below, you'll find a list of the methods that are under the public interface of 
 #### `clicky::get_argument(const std::string& name)` - **method**
 - Returns a pointer to the argument with the given name. If the argument is not found, returns `nullptr`.
 
+#### `clicky::has_argument(const std::string& name)` - **method**
+- Returns a boolean indicating whether the argument with the given name exists.
+
 #### `clicky::get_option(const std::string& name)` - **method**
 - Returns a pointer to the option with the given name. If the option is not found, returns `false`.
 

@@ -7,14 +7,25 @@ int main(int argc, char* argv[]) {
     cli.add_argument("test", "t", "A test argument", false);
     cli.add_argument("test2", "t2", "Another test argument", false);
 
+    cli.add_options({
+      {"verbose", "v", "Enable verbose output", false},
+      {"overwrite", "c", "Overwrite existing files", false}
+    });
+
+    cli.group("options", {"v", "c"});
+    cli.set_prefix({":"}, {":"});
     cli.parse(argc, argv);
 
     try {
+        // Fetching the values of the arguments
         std::string test = cli.argument("test");
         std::cout << "Test: " << test << "\n";
 
         std::string test2 = cli.argument("test2");
         std::cout << "Test2: " << test2 << "\n";
+
+        std::cout << "Verbose: " << cli.option("verbose") << "\n";
+        std::cout << "Overwrite: " << cli.option("overwrite") << "\n";
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";
@@ -22,4 +33,5 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
 

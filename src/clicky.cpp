@@ -4,7 +4,16 @@
 #include <numeric>
 #include <regex>
 #include <stdexcept>
+
+// ==== cross-platform ====
+#ifdef _WIN32
+#include <io.h>
+#define isatty _isatty
+#define fileno _fileno
+#else
 #include <unistd.h>
+#endif
+// ========================
 
 // ==== Constructor ====
 clicky::clicky(const std::string &usage) : usage_(usage) {

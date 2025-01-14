@@ -4,9 +4,6 @@
 
 ### CLIcky
 
-**clicky**, a C++ library meant to facilitate the creation of command line interfaces for apps!
-(only for Linux (for now, I promise......(i think)))
-
 ----
 
 ### Setting up:

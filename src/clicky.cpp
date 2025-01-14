@@ -4,6 +4,7 @@
 #include <numeric>
 #include <regex>
 #include <stdexcept>
+#include <unistd.h>
 
 // ==== Constructor ====
 clicky::clicky(const std::string &usage) : usage_(usage) {
@@ -361,4 +362,15 @@ void clicky::print_usage(const std::string &program_name) const {
               << cl_colors::RESET << cl_colors::WHITE << "  " << formatted_usage
               << cl_colors::RESET << "\n\n";
   }
+}
+
+std::string clicky::get_color(const std::string &color) const {
+  if (color_state_ && isatty(STDOUT_FILENO)) {
+    return color;
+  }
+  return ""; // No colors
+}
+
+void clicky::set_color(bool state) {
+  this->color_state_ = state;
 }

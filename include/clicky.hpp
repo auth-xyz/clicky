@@ -52,6 +52,7 @@ public:
 
   void enable_grouping();
   void disable_grouping();
+  void set_color(bool state);
 
 private:
   struct Option {
@@ -73,6 +74,7 @@ private:
   std::vector<std::string> arg_prefixes_ = {"--", "-"};
   std::vector<std::string> option_prefixes_ = {"--", "-"};
   bool grouping_enabled_ = false;
+  bool color_state_ = true;
 
   int argc_;
   char **argv_;
@@ -93,6 +95,9 @@ private:
   bool parse_set(std::string, std::string next_field = "");
   void validate_required_arguments();
   size_t calculate_max_length() const;
+
+  // Finally implementing the TTY validation
+  std::string get_color(const std::string& color) const;
 
   template <typename T>
   void print_items(const std::unordered_map<std::string, T *> &items,

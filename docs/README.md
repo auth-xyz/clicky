@@ -82,6 +82,9 @@ Below, you'll find a list of the methods that are under the public interface of 
 #### `clicky::group(const std::string& group_name, const std::vector<std::string>& option_aliases)` - **method**
 - Groups options together. The `group_name` is the name of the group, and `option_aliases` is a vector of option aliases that belong to the group. Allows things like ./someprogram -xyz
 
+#### `clicky::set_color(bool state)` - **helper method**
+- Sets `color_state_` to whatever the developer wishes, by default color_state_ is set to `true`, so the help message will be colored. (UNLESS isatty() is triggered, in the case of ex: You pipe the output to a file, like ./a.out > something.txt, then there will be no colors.)
+
 #### `clicky::parse(int argc, char* argv[])` - **method**
 - Parses the command-line arguments. It takes two arguments: `argc` and `argv` from the `main()` function.
 

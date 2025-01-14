@@ -13,13 +13,21 @@ int main(int argc, char* argv[]) {
       {"overwrite", "c", "Overwrite existing files", false}
     });
     parser.group("options", {"v", "c"});
-
-
     parser.parse(argc, argv);
 
-    std::string operation = parser.argument("operation");
-    double num1 = std::stod(parser.argument("x"));
-    double num2 = std::stod(parser.argument("y"));
+    std::string operation = parser.get_argument("operation");
+    double num1 = std::stod(parser.get_argument("x"));
+    double num2 = std::stod(parser.get_argument("y"));
+
+    if (parser.get_option("verbose")) {
+        std::cout << "Operation: " << operation << "\n";
+        std::cout << "First number: " << num1 << "\n";
+        std::cout << "Second number: " << num2 << "\n";
+    }
+
+    if (parser.get_option("overwrite")) {
+        std::cout << "Overwriting existing files\n";
+    }
 
     if (operation == "add") {
         std::cout << (num1 + num2) << "\n";

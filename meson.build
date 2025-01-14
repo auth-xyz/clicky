@@ -1,5 +1,5 @@
 project('clicky', 'cpp',
-    version: '2.4',
+    version: '2.5',
     default_options: ['cpp_std=c++20', 'warning_level=3', 'buildtype=release'])
 
 # Directories

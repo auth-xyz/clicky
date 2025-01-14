@@ -18,14 +18,14 @@ int main(int argc, char* argv[]) {
 
     try {
         // Fetching the values of the arguments
-        std::string test = cli.argument("test");
+        std::string test = cli.get_argument("test");
         std::cout << "Test: " << test << "\n";
 
-        std::string test2 = cli.argument("test2");
+        std::string test2 = cli.get_argument("test2");
         std::cout << "Test2: " << test2 << "\n";
 
-        std::cout << "Verbose: " << cli.option("verbose") << "\n";
-        std::cout << "Overwrite: " << cli.option("overwrite") << "\n";
+        std::cout << "Verbose: " << cli.get_option("verbose") << "\n";
+        std::cout << "Overwrite: " << cli.get_option("overwrite") << "\n";
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";

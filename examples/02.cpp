@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
       {"overwrite", "c", "Overwrite existing files", false}
     });
     parser.group("options", {"v", "c"});
+    parser.set_color(false);
     parser.parse(argc, argv);
 
     std::string operation = parser.get_argument("operation");

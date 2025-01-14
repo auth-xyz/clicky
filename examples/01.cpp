@@ -12,10 +12,10 @@ int main(int argc, char* argv[]) {
 
     parser.parse(argc, argv);
 
-    std::string input = parser.argument("input");
-    std::string output = parser.argument("output");
-    bool verbose = parser.option("verbose");
-    bool overwrite = parser.option("overwrite");
+    std::string input = parser.get_argument("input");
+    std::string output = parser.get_argument("output");
+    bool verbose = parser.get_option("verbose");
+    bool overwrite = parser.get_option("overwrite");
 
     if (verbose) {
         std::cout << "Input file: " << input << "\n";

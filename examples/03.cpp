@@ -10,10 +10,10 @@ int main(int argc, char* argv[]) {
     cli.parse(argc, argv);
 
     try {
-        std::string test = cli.argument("test");
+        std::string test = cli.get_argument("test");
         std::cout << "Test: " << test << "\n";
 
-        std::string test2 = cli.argument("test2");
+        std::string test2 = cli.get_argument("test2");
         std::cout << "Test2: " << test2 << "\n";
 
     } catch (const std::exception& e) {

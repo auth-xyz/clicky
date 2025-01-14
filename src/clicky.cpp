@@ -290,12 +290,12 @@ std::string clicky::join_values(const std::vector<std::string> &values) const {
 void clicky::print_help() const {
   size_t max_length = calculate_max_length();
 
-  std::cout << cl_colors::BRIGHT_YELLOW << "Options:\n" << cl_colors::RESET;
+  std::cout << get_color(cl_colors::BRIGHT_YELLOW) << "Options:\n"
+            << get_color(cl_colors::RESET);
   print_items(options_map_, max_length);
 
-  std::cout << "\n"
-            << cl_colors::BRIGHT_YELLOW << "Arguments:\n"
-            << cl_colors::RESET;
+  std::cout << "\n" << get_color(cl_colors::BRIGHT_YELLOW) << "Arguments:\n"
+            << get_color(cl_colors::RESET);
   print_items(args_map_, max_length);
 }
 
@@ -304,30 +304,31 @@ template <typename T>
 void clicky::print_items(const std::unordered_map<std::string, T *> &items,
                          size_t max_length) const {
   for (const auto &[name, item] : items) {
-    std::cout << "  " << cl_colors::BRIGHT_CYAN << "--" << name;
+    std::cout << "  " << get_color(cl_colors::BRIGHT_CYAN) << "--" << name;
 
     if (!item->alias.empty()) {
-      std::cout << cl_colors::BRIGHT_GREEN << ", -" << item->alias;
+      std::cout << get_color(cl_colors::BRIGHT_GREEN) << ", -" << item->alias;
     }
 
     size_t current_length =
         name.length() + (item->alias.empty() ? 0 : item->alias.length() + 4);
     size_t padding = max_length - current_length + 4;
 
-    std::cout << std::string(padding, ' ') << cl_colors::RESET << ": "
-              << cl_colors::WHITE << item->description << cl_colors::RESET;
+    std::cout << std::string(padding, ' ') << get_color(cl_colors::RESET) << ": "
+              << get_color(cl_colors::WHITE) << item->description
+              << get_color(cl_colors::RESET);
 
     if constexpr (std::is_same_v<T, Option>) {
       std::cout << " (default: "
                 << (item->default_value
-                        ? (cl_colors::BRIGHT_GREEN + std::string("true"))
-                        : (cl_colors::BRIGHT_RED + std::string("false")))
-                << cl_colors::RESET << ")";
-    } else { // Assuming it's an Argument
+                        ? (get_color(cl_colors::BRIGHT_GREEN) + "true")
+                        : (get_color(cl_colors::BRIGHT_RED) + "false"))
+                << get_color(cl_colors::RESET) << ")";
+    } else {
       std::cout << (item->required
-                        ? cl_colors::BRIGHT_RED + std::string(" (required)")
-                        : cl_colors::BRIGHT_GREEN + std::string(" (optional)"))
-                << cl_colors::RESET;
+                        ? get_color(cl_colors::BRIGHT_RED) + " (required)"
+                        : get_color(cl_colors::BRIGHT_GREEN) + " (optional)")
+                << get_color(cl_colors::RESET);
     }
 
     std::cout << '\n';
@@ -358,9 +359,10 @@ void clicky::print_usage(const std::string &program_name) const {
   if (!usage_.empty()) {
     std::string formatted_usage =
         std::regex_replace(usage_, std::regex("\\{program\\}"), program_name);
-    std::cout << cl_colors::BRIGHT_YELLOW << "Usage: \n"
-              << cl_colors::RESET << cl_colors::WHITE << "  " << formatted_usage
-              << cl_colors::RESET << "\n\n";
+    std::cout << get_color(cl_colors::BRIGHT_YELLOW) << "Usage: \n"
+              << get_color(cl_colors::RESET) << get_color(cl_colors::WHITE)
+              << "  " << formatted_usage << get_color(cl_colors::RESET)
+              << "\n\n";
   }
 }
 

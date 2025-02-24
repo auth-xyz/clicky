@@ -20,15 +20,15 @@ public:
   explicit clicky(const std::string &usage = "");
 
   // Add individual arguments and options
-  void add_argument(const std::string &arg_name, const std::string &alias,
+  void add_argument(const std::string &argument_name, const std::string &alias,
                     const std::string &description, bool required);
-  void add_arguments(
+  void bulk_add_arguments(
       const std::vector<std::tuple<std::string, std::string, std::string, bool>>
           &args);
 
   void add_option(const std::string &opt_name, const std::string &alias,
                   const std::string &description, bool default_value);
-  void add_options(
+  void bulk_add_options(
       const std::vector<std::tuple<std::string, std::string, std::string, bool>>
           &options);
 
@@ -46,7 +46,7 @@ public:
 
   // Help and configuration
   void print_help() const;
-  void set_prefix(const std::vector<std::string> &arg_prefixes,
+  void set_prefix(const std::vector<std::string> &argument_prefixes,
                   const std::vector<std::string> &option_prefixes = {});
 
   void enable_grouping();
@@ -61,32 +61,33 @@ private:
     bool value;
   };
 
-  struct Argument {
-    bool required;
-    std::string alias;
+  struct Argument { 
     std::string description;
-    std::string value; // For single value
+    std::string alias;
+    std::string value;
+    bool required;
   };
 
   // Internal state
   std::string usage_;
-  std::vector<std::string> arg_prefixes_ = {"--", "-"};
-  std::vector<std::string> option_prefixes_ = {"--", "-"};
-  bool grouping_enabled_ = false;
   bool color_state_ = true;
+  bool grouping_enabled_ = false;
+
+  std::vector<std::string> argument_prefixes_ = {"--", "-"};
+  std::vector<std::string> option_prefixes_ = {"--", "-"};
 
   int argc_;
   char **argv_;
 
   // Mappings
   std::unordered_map<std::string, Option *> options_map_;
-  std::unordered_map<std::string, Argument *> args_map_;
-  std::unordered_map<std::string, std::string> alias_map_;
+  std::unordered_map<std::string, Argument *> arguments_map_;
+  std::unordered_map<std::string, std::string> short_name_map_;
   std::unordered_map<std::string, std::vector<std::string>> option_groups_;
 
   // Parsed state
-  std::vector<std::string> missing_args_;
-  std::vector<std::string> positional_args_;
+  std::vector<std::string> missing_arguments_;
+  std::vector<std::string> positional_arguments_;
 
   // Internal helper methods
   std::string join_values(const std::vector<std::string> &values) const;
@@ -96,7 +97,7 @@ private:
   size_t calculate_max_length() const;
 
   // Finally implementing the TTY validation
-  std::string get_color(const std::string& color) const;
+  std::string get_color(const std::string &color) const;
 
   template <typename T>
   void print_items(const std::unordered_map<std::string, T *> &items,

@@ -8,7 +8,7 @@ int main(int argc, char* argv[]) {
     parser.add_argument("x", "", "First number", true);
     parser.add_argument("y", "", "Second number", true);
 
-    parser.add_options({
+    parser.bulk_add_options({
       {"verbose", "v", "Enable verbose output", false},
       {"overwrite", "c", "Overwrite existing files", false}
     });

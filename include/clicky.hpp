@@ -40,9 +40,8 @@ public:
   void parse(int argc, char *argv[]);
   const std::vector<std::string> &positional_arguments() const;
 
-  bool get_option(const std::string &name) const;
   std::string get_argument(const std::string &name) const;
-
+  bool has_option(const std::string &name) const;
   bool has_argument(const std::string &name) const;
 
   // Help and configuration

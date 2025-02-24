@@ -1,4 +1,4 @@
-#include <clicky/clicky.hpp> 
+#include "../include/clicky.hpp"
 #include <iostream>
 
 int main(int argc, char* argv[]) {
@@ -13,20 +13,19 @@ int main(int argc, char* argv[]) {
       {"overwrite", "c", "Overwrite existing files", false}
     });
     parser.group("options", {"v", "c"});
-    parser.set_color(false);
     parser.parse(argc, argv);
 
     std::string operation = parser.get_argument("operation");
     double num1 = std::stod(parser.get_argument("x"));
     double num2 = std::stod(parser.get_argument("y"));
 
-    if (parser.get_option("verbose")) {
+    if (parser.has_option("verbose")) {
         std::cout << "Operation: " << operation << "\n";
         std::cout << "First number: " << num1 << "\n";
         std::cout << "Second number: " << num2 << "\n";
     }
 
-    if (parser.get_option("overwrite")) {
+    if (parser.has_option("overwrite")) {
         std::cout << "Overwriting existing files\n";
     }
 

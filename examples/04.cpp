@@ -1,5 +1,5 @@
-#include <clicky/clicky.hpp> 
 #include <iostream>
+#include "../include/clicky.hpp"
 
 int main(int argc, char* argv[]) {
     clicky cli;
@@ -24,8 +24,8 @@ int main(int argc, char* argv[]) {
         std::string test2 = cli.get_argument("test2");
         std::cout << "Test2: " << test2 << "\n";
 
-        std::cout << "Verbose: " << cli.get_option("verbose") << "\n";
-        std::cout << "Overwrite: " << cli.get_option("overwrite") << "\n";
+        std::cout << "Verbose: " << cli.has_option("verbose") << "\n";
+        std::cout << "Overwrite: " << cli.has_option("overwrite") << "\n";
 
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << "\n";

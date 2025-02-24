@@ -1,5 +1,5 @@
-#include "clicky/clicky.hpp"
 #include <iostream>
+#include "../include/clicky.hpp"
 
 int main(int argc, char* argv[]) {
     clicky parser;
@@ -14,8 +14,8 @@ int main(int argc, char* argv[]) {
 
     std::string input = parser.get_argument("input");
     std::string output = parser.get_argument("output");
-    bool verbose = parser.get_option("verbose");
-    bool overwrite = parser.get_option("overwrite");
+    bool verbose = parser.has_option("verbose");
+    bool overwrite = parser.has_option("overwrite");
 
     if (verbose) {
         std::cout << "Input file: " << input << "\n";

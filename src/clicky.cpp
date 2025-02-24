@@ -90,7 +90,6 @@ void clicky::set_prefix(const std::vector<std::string> &arg_prefixes,
 int clicky::parse_field(std::string field) {
   std::string original_field = field; // Keep original for reference
 
-  // Check if the field is an option
   if (options_map_.count(field)) {
     options_map_[field]->value = true;
     return 0;
@@ -109,7 +108,6 @@ int clicky::parse_field(std::string field) {
       return 1;
     }
   } else {
-    // Positional argument
     positional_args_.emplace_back(field);
   }
 
@@ -126,7 +124,6 @@ bool clicky::parse_set(std::string field, std::string next_field) {
     if (alias_map_.count(field)) {
       std::string expanded = alias_map_[field];
 
-      // Check if it's an argument that requires a value
       if (args_map_.count(expanded)) {
         if (!next_field_used && !next_field.empty()) {
           args_map_[expanded]->value = next_field;
@@ -146,7 +143,6 @@ bool clicky::parse_set(std::string field, std::string next_field) {
       exit(1);
     }
   } else {
-    // If grouping is enabled, process each alias individually
     for (char alias : field) {
       std::string alias_str(1, alias);
 
@@ -184,7 +180,7 @@ void clicky::parse(int argc, char *argv[]) {
 
   for (int i = 1; i < argc; ++i) {
     std::string field = argv[i];
-    std::string original_field = field; // Save for error messages
+    std::string original_field = field; 
     bool is_concatenated_flags = false;
 
     // Remove prefixes for options and arguments
@@ -202,11 +198,9 @@ void clicky::parse(int argc, char *argv[]) {
       }
     }
 
-    // Check if field matches a long-form option or argument directly
     if (options_map_.count(field)) {
       options_map_[field]->value = true; // Long-form option matched
     } else if (args_map_.count(field)) {
-      // Argument that requires a value
       if (i + 1 < argc &&
           !std::string(argv[i + 1]).starts_with(option_prefixes_[0]) &&
           !std::string(argv[i + 1]).starts_with(arg_prefixes_[0])) {
@@ -233,7 +227,7 @@ void clicky::parse(int argc, char *argv[]) {
     }
   }
 
-  if (get_option("help")) {
+  if (has_option("help")) {
     print_usage(argv[0]);
     print_help();
     exit(0);
@@ -262,7 +256,7 @@ void clicky::validate_required_arguments() {
 }
 
 // ==== Option Value ====
-bool clicky::get_option(const std::string &name) const {
+bool clicky::has_option(const std::string &name) const {
   auto it = options_map_.find(name);
   return it != options_map_.end() && it->second->value;
 }
@@ -313,6 +307,10 @@ template <typename T>
 void clicky::print_items(const std::unordered_map<std::string, T *> &items,
                          size_t max_length) const {
   for (const auto &[name, item] : items) {
+    if (name.length() == 1) {
+      continue;
+    }
+
     std::cout << "  " << get_color(cl_colors::BRIGHT_CYAN) << "--" << name;
 
     if (!item->alias.empty()) {
@@ -343,13 +341,15 @@ void clicky::print_items(const std::unordered_map<std::string, T *> &items,
     std::cout << '\n';
   }
 }
-
-// ==== Calculate Maximum Length ====
 size_t clicky::calculate_max_length() const {
   size_t max_length = 0;
 
   auto update_max_length = [&](const auto &map) {
     for (const auto &[name, item] : map) {
+      if (name.length() == 1) {
+        continue;
+      }
+
       size_t length = name.length();
       if (!item->alias.empty()) {
         length += item->alias.length() + 4; // Account for ", -"

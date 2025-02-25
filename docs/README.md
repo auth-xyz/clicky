@@ -129,6 +129,18 @@ int main(int argc, char* argv[]) {
 }
 ```
 
+#### Example 3: Using the single-file header:
+```cpp
+#define CLICKY_IMPLEMENTATION
+#include "path/to/clicky.h"
+
+int main(int argc, char* argv[]) {
+    clicky cli;
+    cli.add_argument("some_arg", "s1", "1234", false);
+    cli.parse(argc,argv);
+}
+```
+
 Usage with `g++`:
 ```bash
 g++ -std=c++20 -o some_other_program some_other_program.cpp -lclicky

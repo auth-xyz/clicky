@@ -1,5 +1,6 @@
 #include <iostream>
-#include "../include/clicky.hpp"
+#define CLICKY_IMPLEMENTATION 
+#include "../dist/clicky.h"
 
 int main(int argc, char* argv[]) {
     clicky parser;
